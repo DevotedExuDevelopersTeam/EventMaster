@@ -1,0 +1,28 @@
+name: Docker Runner
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: self-hosted
+    environment: production
+    env:
+      TOKEN: ${{ secrets.TOKEN }}
+      DATABASE: ${{ secrets.DATABASE }}
+      USER: ${{ secrets.USER }}
+      PASSWORD: ${{ secrets.PASSWORD }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run Container
+        run: docker compose up -d --build
+
+      - name: Display Bot Logs
+        run: python3 -m exendlr event-master "bot is ready"
+
+      - name: Cleanup Unused Images
+        run: docker image prune -f
