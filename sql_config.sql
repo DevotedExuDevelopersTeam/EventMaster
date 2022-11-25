@@ -1,16 +1,15 @@
 CREATE TABLE IF NOT EXISTS trophies
 (
     id   VARCHAR(32) PRIMARY KEY,
-    name VARCHAR(64) NOT NULL,
-    url TEXT NOT NULL
+    name VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS users
 (
-    id                   BIGINT PRIMARY KEY,
-    points               INT   DEFAULT 0 CHECK ( points >= 0 ),
-    total_events         INT   DEFAULT 0,
-    won_events           INT   DEFAULT 0
+    id           BIGINT PRIMARY KEY,
+    points       INT DEFAULT 0 CHECK ( points >= 0 ),
+    total_events INT DEFAULT 0,
+    won_events   INT DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS inventories
@@ -30,11 +29,11 @@ CREATE TABLE IF NOT EXISTS nitro_shop
 
 CREATE TABLE IF NOT EXISTS events
 (
-    id          UUID PRIMARY KEY,
-    name VARCHAR(16) NOT NULL,
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    registration_channel_id BIGINT NOT NULL,
-    registration_message_id BIGINT NOT NULL
+    id                      UUID PRIMARY KEY,
+    name                    VARCHAR(16) NOT NULL,
+    created_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    registration_channel_id BIGINT      NOT NULL,
+    registration_message_id BIGINT      NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS groups
@@ -42,7 +41,7 @@ CREATE TABLE IF NOT EXISTS groups
     event_id   UUID REFERENCES events ON DELETE CASCADE NOT NULL,
     start_time TIMESTAMP                                NOT NULL,
     role_id    BIGINT                                   NOT NULL,
-    closed BOOLEAN DEFAULT FALSE,
+    closed     BOOLEAN DEFAULT FALSE,
     UNIQUE (event_id, role_id)
 );
 
