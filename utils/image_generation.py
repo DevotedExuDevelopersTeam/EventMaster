@@ -236,6 +236,7 @@ def __draw_profile_card(
                 image.paste(
                     resized_tr,
                     center_to_box((pos_x, PROF_TR_POS_Y), PROF_TR_TROPHY_SIZE),
+                    resized_tr.convert("RGBA"),
                 )
 
     io = BytesIO()
