@@ -6,4 +6,4 @@ WORKDIR /app
 RUN poetry install --only main
 
 COPY . .
-CMD ["poetry", 'run', 'python3', 'main.py']
+CMD ['poetry', 'run', 'python3', 'main.py']
