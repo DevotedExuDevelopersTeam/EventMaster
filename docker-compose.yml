@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  main:
+    container_name: 'event-master'
+    network_mode: host
+    build: .
+    restart: always
+    volumes:
+      - /home/exenifix/em-data:/app/data
+    environment:
+      - TOKEN
+      - DATABASE
+      - USER
+      - PASSWORD

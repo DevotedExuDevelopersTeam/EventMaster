@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "eventmaster"
+version = "1.0"
+description = "Personal DevotedExu's bot for handling events."
+authors = ["Exenifix"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+disnake = "^2.7.0"
+pillow = "^9.3.0"
+asyncpg = "^0.27.0"
+exencolorlogs = "^1.0.2"
+pendulum = "^2.1.2"
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^2.20.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
