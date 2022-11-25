@@ -11,8 +11,6 @@ jobs:
     environment: production
     env:
       TOKEN: ${{ secrets.TOKEN }}
-      DATABASE: ${{ secrets.DATABASE }}
-      USER: ${{ secrets.USER }}
       PASSWORD: ${{ secrets.PASSWORD }}
 
     steps:

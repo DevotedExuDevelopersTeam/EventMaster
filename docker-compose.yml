@@ -9,6 +9,6 @@ services:
       - /home/exenifix/em-data:/app/data
     environment:
       - TOKEN
-      - DATABASE
-      - USER
+      - DATABASE='event-master'
+      - USER=core
       - PASSWORD
