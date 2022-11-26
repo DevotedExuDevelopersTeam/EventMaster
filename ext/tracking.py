@@ -75,9 +75,11 @@ class Tracking(Cog):
 class ActivityTracking(Cog):
     def __init__(self, *args):
         super().__init__(*args)
+        self.activity_track.start()
 
     @tasks.loop(hours=1)
     async def activity_track(self):
+        await self.bot.wait_until_ready()
         data = [0] * 3
         d = {disnake.Status.online: 0, disnake.Status.idle: 1, disnake.Status.dnd: 2}
         for m in self.bot.server.members:
