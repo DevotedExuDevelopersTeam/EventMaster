@@ -45,6 +45,14 @@ CREATE TABLE IF NOT EXISTS groups
     UNIQUE (event_id, role_id)
 );
 
+CREATE TABLE IF NOT EXISTS stats
+(
+    time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    online INT NOT NULL,
+    idle INT NOT NULL,
+    dnd INT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS version_data
 (
     id      SMALLINT UNIQUE DEFAULT 0,

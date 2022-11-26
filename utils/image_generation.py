@@ -6,6 +6,8 @@ from typing import Sequence
 from urllib.request import build_opener, install_opener, urlopen
 
 import disnake
+import matplotlib.pyplot as plt
+import numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 from utils.database import EventUser
@@ -241,5 +243,38 @@ def __draw_profile_card(
 
     io = BytesIO()
     image.save(io, format="png")
+    io.seek(0)
+    return io
+
+
+async def draw_activity_plot(data: list[dict]) -> BytesIO:
+    return await asyncio.get_event_loop().run_in_executor(
+        None, __draw_activity_plot, data
+    )
+
+
+def __draw_activity_plot(d: list[dict]) -> BytesIO:
+    """
+    :param d: A dict with items in the following order: [time, online, idle, dnd]
+    :return: A BytesIO with plot saved into, seeked to 0
+    """
+    data = np.array([list(e.values()) for e in d])
+    x = data[:, 0]
+    online = data[:, 1]
+    idle = data[:, 2]
+    dnd = data[:, 3]
+    total = online + idle + dnd
+
+    plt.figure(figsize=(16, 5), dpi=80)
+    plt.plot(x, total, "-g", x, online, ":g", x, idle, ":k", x, dnd, ":r")
+    plt.title("Activity Data")
+    plt.suptitle()
+    plt.xlabel("Time")
+    plt.ylabel("Online users")
+    plt.grid(linestyle="--", linewidth=0.5)
+    plt.legend(["total", "online", "idle", "dnd"])
+
+    io = BytesIO()
+    plt.savefig(io)
     io.seek(0)
     return io
