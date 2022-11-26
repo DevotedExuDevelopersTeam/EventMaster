@@ -116,7 +116,7 @@ class ActivityTracking(Cog):
 
         await inter.response.defer()
         data = await self.bot.db.fetchall(
-            "SELECT online, idle, dnd FROM stats WHERE time BETWEEN $1 AND $2 ORDER BY time",
+            "SELECT time, online, idle, dnd FROM stats WHERE time BETWEEN $1 AND $2 ORDER BY time",
             start,
             end,
         )
