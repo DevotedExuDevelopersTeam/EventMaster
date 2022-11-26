@@ -268,7 +268,6 @@ def __draw_activity_plot(d: list[dict]) -> BytesIO:
     plt.figure(figsize=(16, 5), dpi=80)
     plt.plot(x, total, "-g", x, online, ":g", x, idle, ":k", x, dnd, ":r")
     plt.title("Activity Data")
-    plt.suptitle()
     plt.xlabel("Time")
     plt.ylabel("Online users")
     plt.grid(linestyle="--", linewidth=0.5)
