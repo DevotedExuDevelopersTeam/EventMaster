@@ -266,7 +266,7 @@ def __draw_activity_plot(d: list[dict]) -> BytesIO:
     total = online + idle + dnd
 
     plt.figure(figsize=(16, 5), dpi=80)
-    plt.plot(x, total, "-g", x, online, ":g", x, idle, ":k", x, dnd, ":r")
+    plt.plot(x, total, "-g", x, online, ":g", x, idle, ":y", x, dnd, ":r")
     plt.title("Activity Data")
     plt.xlabel("Time")
     plt.ylabel("Online users")
