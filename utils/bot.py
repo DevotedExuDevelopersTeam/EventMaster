@@ -6,7 +6,6 @@ import sys
 import disnake
 from disnake.ext import commands
 
-from utils.constants import SERVER_ID
 from utils.database import Database
 from utils.logs import Logger
 
@@ -56,7 +55,6 @@ class Bot(commands.InteractionBot):
 
     async def on_ready(self):
         self.log.ok("Bot is ready")
-        self.server = self.get_guild(SERVER_ID)
 
     async def on_error(self, event_method: str, *args, **kwargs) -> None:
         self.log.error(

@@ -6,7 +6,8 @@ from disnake.ext import commands, tasks
 from pendulum.parsing import ParserError
 
 from utils.bot import Bot, Cog
-from utils.image_generation import draw_statistics_card, draw_activity_plot
+from utils.constants import SERVER_ID
+from utils.image_generation import draw_activity_plot, draw_statistics_card
 from utils.tracking import Session
 
 
@@ -82,7 +83,8 @@ class ActivityTracking(Cog):
         await self.bot.wait_until_ready()
         data = [0] * 3
         d = {disnake.Status.online: 0, disnake.Status.idle: 1, disnake.Status.dnd: 2}
-        for m in self.bot.server.members:
+        server = self.bot.get_guild(SERVER_ID)
+        for m in server.members:
             if m.status != disnake.Status.offline:
                 data[d[m.status]] += 1
 
