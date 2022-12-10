@@ -104,7 +104,7 @@ class ActivityTracking(Cog):
         try:
             start = pendulum.parse(period_start, strict=False, tz=None)
             end = pendulum.parse(period_end, strict=False, tz=None)
-            if not 2 <= (end - start).hours <= 154:
+            if not 2 <= (end - start).total_hours() <= 154:
                 await inter.send(
                     "The duration must be more than 2 hours and less than 7 days",
                     ephemeral=True,
