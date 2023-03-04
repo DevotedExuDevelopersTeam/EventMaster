@@ -6,8 +6,8 @@ from disnake.ext import commands, tasks
 
 from utils.bot import Cog
 from utils.constants import ENUMERATION_EMOJIS, POLLS_ROLE_ID
-from utils.views import ConfirmationView, Modal
 from utils.deco import emoji_enum
+from utils.views import ConfirmationView, Modal
 
 
 class Polls(Cog):
@@ -24,10 +24,7 @@ class Polls(Cog):
             message = self._messages[message_id]
             view = disnake.ui.View.from_message(message)
             for item in view.children:
-                if not (
-                    isinstance(item, disnake.ui.Button)
-                    and item.custom_id.startswith("option-")
-                ):
+                if not (isinstance(item, disnake.ui.Button) and item.custom_id.startswith("option-")):
                     continue
                 if (option := int(item.custom_id.split("-")[1])) in required_options:
                     votes: int = await self.bot.db.fetchval(
@@ -41,9 +38,7 @@ class Polls(Cog):
 
     @Cog.listener(disnake.Event.raw_message_delete)
     async def polls_cleanup(self, payload: disnake.RawMessageDeleteEvent):
-        await self.bot.db.execute(
-            "DELETE FROM polls WHERE message_id = $1", payload.message_id
-        )
+        await self.bot.db.execute("DELETE FROM polls WHERE message_id = $1", payload.message_id)
 
     @Cog.listener(disnake.Event.button_click)
     async def polls_listener(self, inter: disnake.MessageInteraction):
@@ -122,13 +117,11 @@ class Polls(Cog):
             )
         )
         if not 2 <= len(options) <= 10:
-            await m_inter.send(
-                "There must be at least 2 options, but no more than 10", ephemeral=True
-            )
+            await m_inter.send("There must be at least 2 options, but no more than 10", ephemeral=True)
             return
         view = ConfirmationView(m_inter)
         embed = disnake.Embed(title=topic, description=emoji_enum(options), color=color)
-        await m_inter.send(f"Please check poll preview", embed=embed, view=view)
+        await m_inter.send("Please check poll preview", embed=embed, view=view)
         inter, res = await view.get_result()
         if not res:
             await inter.send("Operation cancelled")

@@ -33,9 +33,7 @@ class Bot(commands.InteractionBot):
 
         super().__init__(
             intents=intents,
-            activity=disnake.Activity(
-                name="for event ideas", type=disnake.ActivityType.watching
-            ),
+            activity=disnake.Activity(name="for event ideas", type=disnake.ActivityType.watching),
         )
 
     async def start(self, *args, **kwargs):
@@ -57,9 +55,7 @@ class Bot(commands.InteractionBot):
         self.log.ok("Bot is ready")
 
     async def on_error(self, event_method: str, *args, **kwargs) -> None:
-        self.log.error(
-            "Exception occurred at %s", event_method, exc_info=sys.exc_info()
-        )
+        self.log.error("Exception occurred at %s", event_method, exc_info=sys.exc_info())
 
     async def close(self) -> None:
         self.log.info("Shutting down...")
@@ -71,9 +67,7 @@ class Bot(commands.InteractionBot):
         sys.modules[module_name] = module
         members = inspect.getmembers(
             module,
-            lambda x: inspect.isclass(x)
-            and issubclass(x, commands.Cog)
-            and x.__name__ != "Cog",
+            lambda x: inspect.isclass(x) and issubclass(x, commands.Cog) and x.__name__ != "Cog",
         )
         for member in members:
             self.add_cog(member[1](self))

@@ -1,6 +1,6 @@
 import asyncio
 import re
-from typing import Callable, TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Callable
 
 import disnake
 
@@ -24,9 +24,7 @@ class EventEndView(disnake.ui.View):
         return True
 
     @disnake.ui.button(label="Set Winners", style=disnake.ButtonStyle.blurple)
-    async def set_winners(
-        self, button: disnake.ui.Button, inter: disnake.MessageInteraction
-    ):
+    async def set_winners(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
         button.disabled = True
         await inter.message.edit(view=self)
         await inter.send(
@@ -35,8 +33,7 @@ class EventEndView(disnake.ui.View):
         try:
             msg: disnake.Message = await inter.bot.wait_for(
                 "message",
-                check=lambda m: m.author.id == self.user_id
-                and re.findall(ID_PATTERN, m.content),
+                check=lambda m: m.author.id == self.user_id and re.findall(ID_PATTERN, m.content),
                 timeout=600,
             )
         except asyncio.TimeoutError:
@@ -48,27 +45,19 @@ class EventEndView(disnake.ui.View):
         ids = re.findall(ID_PATTERN, msg.content)
         self.winners = list(map(int, ids))
         for child in self.children:
-            if isinstance(child, disnake.ui.Button) and child.custom_id.endswith(
-                "winners"
-            ):
+            if isinstance(child, disnake.ui.Button) and child.custom_id.endswith("winners"):
                 child.disabled = False
         await inter.message.edit(view=self)
         await inter.send("Successfully set the winners!")
 
-    @disnake.ui.button(
-        label="Add EP to Participants", style=disnake.ButtonStyle.green, row=1
-    )
-    async def ep_part(
-        self, button: disnake.ui.Button, inter: disnake.MessageInteraction
-    ):
+    @disnake.ui.button(label="Add EP to Participants", style=disnake.ButtonStyle.green, row=1)
+    async def ep_part(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
         async def modal_callback(interaction: disnake.ModalInteraction):
             data = interaction.text_values
             try:
                 points = abs(int(data["ep"]))
             except ValueError:
-                await interaction.send(
-                    f"Could not convert `{data['ep']}` to a number", ephemeral=True
-                )
+                await interaction.send(f"Could not convert `{data['ep']}` to a number", ephemeral=True)
                 return
             button.disabled = True
             await interaction.message.edit(view=self)
@@ -77,7 +66,8 @@ class EventEndView(disnake.ui.View):
             # noinspection PyTypeChecker
             dt = list(map(lambda x: (x, points), self.participants))
             await bot.db.executemany(
-                "INSERT INTO users (id, points) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET points = users.points + $2",
+                "INSERT INTO users (id, points) "
+                "VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET points = users.points + $2",
                 dt,
             )
             await interaction.send("Successfully added points to all participants")
@@ -90,23 +80,15 @@ class EventEndView(disnake.ui.View):
             )
         )
 
-    @disnake.ui.button(
-        label="Add Trophy to Participants", style=disnake.ButtonStyle.green, row=1
-    )
-    async def trophy_part(
-        self, button: disnake.ui.Button, inter: disnake.MessageInteraction
-    ):
+    @disnake.ui.button(label="Add Trophy to Participants", style=disnake.ButtonStyle.green, row=1)
+    async def trophy_part(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
         async def modal_callback(interaction: disnake.ModalInteraction):
             data = interaction.text_values
             bot: "Bot" = interaction.bot
             id = data["id"].strip().lower()
-            trophy_exists = await bot.db.fetchval(
-                "SELECT EXISTS(SELECT 1 FROM trophies WHERE id = $1)", id
-            )
+            trophy_exists = await bot.db.fetchval("SELECT EXISTS(SELECT 1 FROM trophies WHERE id = $1)", id)
             if not trophy_exists:
-                await interaction.send(
-                    f"Trophy with id `{id}` does not exist", ephemeral=True
-                )
+                await interaction.send(f"Trophy with id `{id}` does not exist", ephemeral=True)
                 return
             button.disabled = True
             await interaction.message.edit(view=self)
@@ -139,17 +121,13 @@ class EventEndView(disnake.ui.View):
         custom_id="ep_winners",
         disabled=True,
     )
-    async def ep_winners(
-        self, button: disnake.ui.Button, inter: disnake.MessageInteraction
-    ):
+    async def ep_winners(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
         async def modal_callback(interaction: disnake.ModalInteraction):
             data = interaction.text_values
             try:
                 points = abs(int(data["ep"]))
             except ValueError:
-                await interaction.send(
-                    f"Could not convert `{data['ep']}` to a number", ephemeral=True
-                )
+                await interaction.send(f"Could not convert `{data['ep']}` to a number", ephemeral=True)
                 return
             button.disabled = True
             await interaction.message.edit(view=self)
@@ -158,7 +136,8 @@ class EventEndView(disnake.ui.View):
             # noinspection PyTypeChecker
             dt = list(map(lambda x: (x, points), self.winners))
             await bot.db.executemany(
-                "INSERT INTO users (id, points) VALUES ($1, $2) ON CONFLICT (id) DO UPDATE SET points = users.points + $2",
+                "INSERT INTO users (id, points) VALUES ($1, $2) "
+                "ON CONFLICT (id) DO UPDATE SET points = users.points + $2",
                 dt,
             )
             await interaction.send("Successfully added points to all winners")
@@ -178,20 +157,14 @@ class EventEndView(disnake.ui.View):
         custom_id="tr_winners",
         disabled=True,
     )
-    async def tr_winners(
-        self, button: disnake.ui.Button, inter: disnake.MessageInteraction
-    ):
+    async def tr_winners(self, button: disnake.ui.Button, inter: disnake.MessageInteraction):
         async def modal_callback(interaction: disnake.ModalInteraction):
             data = interaction.text_values
             bot: "Bot" = interaction.bot
             id = data["id"].strip().lower()
-            trophy_exists = await bot.db.fetchval(
-                "SELECT EXISTS(SELECT 1 FROM trophies WHERE id = $1)", id
-            )
+            trophy_exists = await bot.db.fetchval("SELECT EXISTS(SELECT 1 FROM trophies WHERE id = $1)", id)
             if not trophy_exists:
-                await interaction.send(
-                    f"Trophy with id `{id}` does not exist", ephemeral=True
-                )
+                await interaction.send(f"Trophy with id `{id}` does not exist", ephemeral=True)
                 return
             button.disabled = True
             await interaction.message.edit(view=self)
@@ -224,16 +197,15 @@ class EventEndView(disnake.ui.View):
         await inter.response.defer()
         bot: "Bot" = inter.bot
         await bot.db.executemany(
-            "INSERT INTO users (id, total_events) VALUES ($1, 1) ON CONFLICT (id) DO UPDATE SET total_events = users.total_events + 1",
+            "INSERT INTO users (id, total_events) VALUES ($1, 1) "
+            "ON CONFLICT (id) DO UPDATE SET total_events = users.total_events + 1",
             [(x,) for x in self.participants],
         )
         await bot.db.execute(
             "UPDATE users SET won_events = won_events + 1 WHERE id = ANY($1::BIGINT[])",
             self.winners,
         )
-        await inter.send(
-            f"Event was ended. Please use `/removeevent` command for cleanup"
-        )
+        await inter.send("Event was ended. Please use `/removeevent` command for cleanup")
 
 
 class ConfirmationView(disnake.ui.View):
@@ -298,9 +270,7 @@ class Modal(disnake.ui.Modal):
 
     async def callback(self, interaction: disnake.ModalInteraction, /) -> None:
         # noinspection PyProtectedMember
-        interaction._state._modal_store.remove_modal(
-            interaction.author.id, interaction.custom_id
-        )
+        interaction._state._modal_store.remove_modal(interaction.author.id, interaction.custom_id)
         self._inter = interaction
         self._fut.set_result(False)
 

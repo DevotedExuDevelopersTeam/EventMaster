@@ -46,17 +46,11 @@ class Database:
 
     async def __check_version(self):
         self._log.info("Checking database version...")
-        version: int = await self.fetchval(
-            "SELECT version FROM version_data WHERE id = 0"
-        )
+        version: int = await self.fetchval("SELECT version FROM version_data WHERE id = 0")
         if self.VERSION > version:
-            self._log.warning(
-                "Database is version %d, but bot uses %d, applying migrations..."
-            )
+            self._log.warning("Database is version %d, but bot uses %d, applying migrations...")
             # TODO migration system
-            self._log.error(
-                "Migration system is not implemented yet, update is not possible"
-            )
+            self._log.error("Migration system is not implemented yet, update is not possible")
             return
         self._log.ok("Database is at latest version")
 
@@ -78,9 +72,7 @@ class Database:
     def get_event_user(self, id: int) -> "EventUser":
         return EventUser(self, id)
 
-    async def create_event(
-        self, id: uuid.UUID, name: str, r_message: Message
-    ) -> uuid.UUID:
+    async def create_event(self, id: uuid.UUID, name: str, r_message: Message) -> uuid.UUID:
         await self.execute(
             "INSERT INTO events (id, name, registration_channel_id, registration_message_id) "
             "VALUES ($1, $2, $3, $4)",
@@ -179,12 +171,8 @@ class EventUser(DataModel):
         return self
 
     async def get_lb_pos(self) -> int:
-        return await self._db.fetchval(
-            "SELECT COUNT(*) FROM users WHERE points >= $1", self.points
-        )
+        return await self._db.fetchval("SELECT COUNT(*) FROM users WHERE points >= $1", self.points)
 
     async def update_event_points(self, delta: int):
         await self.ensure_existence()
-        await self._db.execute(
-            "UPDATE users SET points = points + $2 WHERE id = $1", self.id, delta
-        )
+        await self._db.execute("UPDATE users SET points = points + $2 WHERE id = $1", self.id, delta)

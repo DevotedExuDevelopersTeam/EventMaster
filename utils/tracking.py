@@ -8,11 +8,7 @@ class Session:
     def __init__(self, channel: disnake.TextChannel):
         self.total_messages: int = 0
         self.started_at = pendulum.now()
-        self.users: dict[
-            int, int
-        ] = (
-            {}
-        )  # a dict where keys are user IDs and values are amounts of their messages
+        self.users: dict[int, int] = {}  # a dict where keys are user IDs and values are amounts of their messages
         self.stats: list[int] = []  # list with amount of messages for each minute
         self.id = f"{channel.name}-{int(self.started_at.timestamp())}"
         self.log = Logger("session-" + self.id)
@@ -37,7 +33,5 @@ class Session:
     def get_top_users(self, limit) -> list[int]:
         # noinspection PyTypeChecker
         users: list[tuple[int, int]] = list(self.users.items())
-        users.sort(
-            key=lambda e: e[1], reverse=True
-        )  # TODO probably wanna do optimization
+        users.sort(key=lambda e: e[1], reverse=True)
         return [i[0] for i in users[:limit]]

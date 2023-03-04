@@ -88,9 +88,7 @@ def get_mask(size: tuple[int, int]) -> Image.Image:
     return mask
 
 
-def center_to_box(
-    center: tuple[int, int], size: tuple[int, int]
-) -> tuple[int, int, int, int]:
+def center_to_box(center: tuple[int, int], size: tuple[int, int]) -> tuple[int, int, int, int]:
     s0 = size[0] // 2
     s1 = size[1] // 2
     c0 = center[0]
@@ -179,9 +177,7 @@ async def draw_profile_card(
     )
 
 
-def __draw_profile_card(
-    user: disnake.Member, lb_pos: int, event_user: EventUser
-) -> BytesIO:
+def __draw_profile_card(user: disnake.Member, lb_pos: int, event_user: EventUser) -> BytesIO:
     image = PROF_BASE_IMAGE.copy()
     draw = ImageDraw.Draw(image)
 
@@ -205,9 +201,7 @@ def __draw_profile_card(
 
     with Image.open(urlopen(user.display_avatar.url)) as pfp:
         pfp = pfp.resize(PROF_PFP_SIZE)
-        image.paste(
-            pfp, center_to_box(PROF_PFP_POS, PROF_PFP_SIZE), get_mask(PROF_PFP_SIZE)
-        )
+        image.paste(pfp, center_to_box(PROF_PFP_POS, PROF_PFP_SIZE), get_mask(PROF_PFP_SIZE))
 
     for pos_y, stat in zip(
         range(PROF_STATS_POS_Y_START, PROF_STATS_POS_Y_STOP, PROF_STATS_POS_Y_STEP),
@@ -222,18 +216,14 @@ def __draw_profile_card(
             align="right",
         )
 
-    for i, pos_x in enumerate(
-        range(PROF_TR_POS_X_START, PROF_TR_POS_X_STOP, PROF_TR_POS_X_STEP)
-    ):
+    for i, pos_x in enumerate(range(PROF_TR_POS_X_START, PROF_TR_POS_X_STOP, PROF_TR_POS_X_STEP)):
         if len(event_user.trophy_ids) <= i:
             draw.ellipse(
                 center_to_box((pos_x, PROF_TR_POS_Y), PROF_TR_EMPTY_SIZE),
                 fill=PROF_TR_EMPTY_COLOR,
             )
         else:
-            with Image.open(
-                Path("data/trophies/", event_user.trophy_ids[i] + ".png")
-            ) as tr:
+            with Image.open(Path("data/trophies/", event_user.trophy_ids[i] + ".png")) as tr:
                 resized_tr = tr.resize(PROF_TR_TROPHY_SIZE)
                 image.paste(
                     resized_tr,
@@ -248,9 +238,7 @@ def __draw_profile_card(
 
 
 async def draw_activity_plot(data: list[dict]) -> BytesIO:
-    return await asyncio.get_event_loop().run_in_executor(
-        None, __draw_activity_plot, data
-    )
+    return await asyncio.get_event_loop().run_in_executor(None, __draw_activity_plot, data)
 
 
 def __draw_activity_plot(d: list[dict]) -> BytesIO:

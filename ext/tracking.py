@@ -28,11 +28,7 @@ class Tracking(Cog):
             f"{delta.hours}:{delta.minutes}:{delta.seconds}",
             session.total_messages,
             session.total_participants,
-            list(
-                map(
-                    lambda e: str(channel.guild.get_member(e)), session.get_top_users(5)
-                )
-            ),
+            list(map(lambda e: str(channel.guild.get_member(e)), session.get_top_users(5))),
         )
 
     @Cog.listener()
@@ -42,9 +38,7 @@ class Tracking(Cog):
 
         self.sessions[msg.channel.id].register_message(msg)
 
-    @commands.slash_command(
-        name="starttrack", description="Starts activity tracking in selected channel"
-    )
+    @commands.slash_command(name="starttrack", description="Starts activity tracking in selected channel")
     async def starttrack(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -54,9 +48,7 @@ class Tracking(Cog):
         self.new_session(channel)
         await inter.send(f"Started activity tracking in {channel.mention}")
 
-    @commands.slash_command(
-        name="stoptrack", description="Stops activity tracking in selected channel"
-    )
+    @commands.slash_command(name="stoptrack", description="Stops activity tracking in selected channel")
     async def stoptrack(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -64,9 +56,7 @@ class Tracking(Cog):
     ):
         channel = channel or inter.channel
         if channel.id not in self.sessions:
-            await inter.send(
-                f"There's no activity tracking session in {channel.mention}"
-            )
+            await inter.send(f"There's no activity tracking session in {channel.mention}")
             return
         await inter.response.defer()
         pic = await self.end_session(channel)
@@ -88,13 +78,9 @@ class ActivityTracking(Cog):
             if m.status != disnake.Status.offline:
                 data[d[m.status]] += 1
 
-        await self.bot.db.execute(
-            "INSERT INTO stats (online, idle, dnd) VALUES ($1, $2, $3)", *data
-        )
+        await self.bot.db.execute("INSERT INTO stats (online, idle, dnd) VALUES ($1, $2, $3)", *data)
 
-    @commands.slash_command(
-        name="stats", description="Display stats for the specified period"
-    )
+    @commands.slash_command(name="stats", description="Display stats for the specified period")
     async def stats(
         self,
         inter: disnake.ApplicationCommandInteraction,
