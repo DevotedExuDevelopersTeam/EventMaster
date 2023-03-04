@@ -1,6 +1,6 @@
 import asyncio
 import re
-from typing import Callable, TYPE_CHECKING
+from typing import Callable, TYPE_CHECKING, cast
 
 import disnake
 
@@ -236,6 +236,43 @@ class EventEndView(disnake.ui.View):
         )
 
 
+class ConfirmationView(disnake.ui.View):
+    def __init__(self, inter: disnake.Interaction):
+        super().__init__()
+        self.user_id = inter.user.id
+        self.value: bool | None = None
+        self.inter: disnake.Interaction = inter
+
+    async def on_timeout(self) -> None:
+        self.stop()
+
+    async def interaction_check(self, inter: disnake.MessageInteraction) -> bool:
+        if inter.author.id != self.user_id:
+            await inter.send("This button is not for you", ephemeral=True)
+            return False
+        return True
+
+    async def get_result(self) -> tuple[disnake.MessageInteraction, bool]:
+        await self.wait()
+        for item in self.children:
+            item.disabled = True
+        if self.value is None:
+            raise asyncio.TimeoutError()
+        return self.inter, self.value  # type: ignore
+
+    @disnake.ui.button(label="Confirm", style=disnake.ButtonStyle.green)
+    async def confirm(self, _, inter: disnake.MessageInteraction):
+        self.value = True
+        self.inter = inter
+        self.stop()
+
+    @disnake.ui.button(label="Cancel", style=disnake.ButtonStyle.red)
+    async def cancel(self, _, inter: disnake.MessageInteraction):
+        self.value = False
+        self.inter = inter
+        self.stop()
+
+
 class DataModal(disnake.ui.Modal):
     def __init__(self, title: str, components: list, coro: Callable):
         super().__init__(title=title, components=components)
@@ -246,3 +283,34 @@ class DataModal(disnake.ui.Modal):
             await self._coro(interaction)
         except ValueError:
             await interaction.send("Invalid data format", ephemeral=True)
+
+
+class Modal(disnake.ui.Modal):
+    """
+    Modal class that waits for user to fill modal out then returns results.
+    """
+
+    _fut: asyncio.Future
+    _inter: disnake.ModalInteraction
+
+    async def on_timeout(self) -> None:
+        self._fut.set_result(True)
+
+    async def callback(self, interaction: disnake.ModalInteraction, /) -> None:
+        # noinspection PyProtectedMember
+        interaction._state._modal_store.remove_modal(
+            interaction.author.id, interaction.custom_id
+        )
+        self._inter = interaction
+        self._fut.set_result(False)
+
+    async def wait(self) -> disnake.ModalInteraction:
+        """
+        Waits for user to fill modal out and returns resulting interaction.
+        :return: Resulting ``ModalInteraction``.
+        :raise ViewTimeout: Modal was timed out.
+        """
+        self._fut = asyncio.shield(asyncio.get_event_loop().create_future())
+        if await self._fut:
+            raise asyncio.TimeoutError()
+        return self._inter

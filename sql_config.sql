@@ -53,6 +53,14 @@ CREATE TABLE IF NOT EXISTS stats
     dnd INT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS polls
+(
+    message_id BIGINT NOT NULL,
+    option_id SMALLINT NOT NULL,
+    member_id BIGINT NOT NULL,
+    UNIQUE (message_id, member_id)
+);
+
 CREATE TABLE IF NOT EXISTS version_data
 (
     id      SMALLINT UNIQUE DEFAULT 0,
