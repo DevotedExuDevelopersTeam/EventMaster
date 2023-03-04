@@ -7,16 +7,16 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
-disnake = "^2.7.0"
-pillow = "^9.3.0"
+disnake = "^2.8.1"
+pillow = "^9.4.0"
 asyncpg = "^0.27.0"
-exencolorlogs = "^1.0.2"
+exencolorlogs = "^1.1.1"
 pendulum = "^2.1.2"
-matplotlib = "^3.6.2"
+matplotlib = "^3.7.1"
 
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^2.20.0"
+pre-commit = "^3.1.1"
 
 [build-system]
 requires = ["poetry-core"]
