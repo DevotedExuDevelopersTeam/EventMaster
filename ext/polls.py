@@ -85,6 +85,7 @@ class Polls(Cog):
         self._requested_updates[message_id].add(option_id)
 
     @commands.slash_command(name="poll")
+    @commands.default_member_permissions(manage_messages=True)
     async def poll(
         self,
         inter: disnake.ApplicationCommandInteraction,
@@ -93,10 +94,19 @@ class Polls(Cog):
         poll_color: disnake.Color | None = None,
     ):
         """
-        Create a new poll with set topic
+        Create a new poll with set topic.
+
+        Parameters
+        ----------
+        topic: The topic of the poll
+        channel: Channel to post the poll in
+        poll_color: Color of the poll embed
         """
         channel = channel or inter.channel
         color = poll_color or disnake.Color.random()
+        if not channel.permissions_for(inter.user).send_messages:
+            await inter.send("You cannot send messages in that channel", ephemeral=True)
+            return
         modal = Modal(
             title="Specify options",
             components=[
