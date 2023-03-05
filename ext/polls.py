@@ -19,8 +19,10 @@ class Polls(Cog):
 
     @tasks.loop(seconds=5)
     async def update_polls(self):
-        for message_id in self._requested_updates:
+        for message_id in self._requested_updates.copy():
             required_options = self._requested_updates[message_id]
+            if len(required_options) == 0:
+                continue
             message = self._messages[message_id]
             view = disnake.ui.View.from_message(message)
             for item in view.children:
@@ -33,6 +35,7 @@ class Polls(Cog):
                         option,
                     )
                     item.label = f"{votes} vote{'' if votes == 1 else 's'}"
+            required_options.clear()
             await message.edit(view=view)
             view.stop()
 
