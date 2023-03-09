@@ -61,6 +61,11 @@ CREATE TABLE IF NOT EXISTS polls
     UNIQUE (message_id, member_id)
 );
 
+CREATE TABLE IF NOT EXISTS polls_messages
+(
+    message_id BIGINT UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS version_data
 (
     id      SMALLINT UNIQUE DEFAULT 0,

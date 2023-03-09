@@ -45,6 +45,7 @@ class Bot(commands.InteractionBot):
     def run(self):
         self.log.info("Loading extensions...")
         self.load_all_extensions("ext")
+        self.disable_dm_commands()
         try:
             super().run(os.environ["TOKEN"])
         except KeyError:
@@ -82,6 +83,10 @@ class Bot(commands.InteractionBot):
 
             elif full_path.endswith(".py"):
                 self.auto_setup(full_path[:-3].replace("/", "."))
+
+    def disable_dm_commands(self):
+        for command in self.application_commands:
+            command.body.dm_permission = False
 
 
 class Cog(commands.Cog):

@@ -42,6 +42,7 @@ class Polls(Cog):
     @Cog.listener(disnake.Event.raw_message_delete)
     async def polls_cleanup(self, payload: disnake.RawMessageDeleteEvent):
         await self.bot.db.execute("DELETE FROM polls WHERE message_id = $1", payload.message_id)
+        await self.bot.db.execute("DELETE FROM polls_messages WHERE message_id = $1", payload.message_id)
 
     @Cog.listener(disnake.Event.button_click)
     async def polls_listener(self, inter: disnake.MessageInteraction):
@@ -152,7 +153,7 @@ class Polls(Cog):
                     custom_id=f"option-{i}",
                 )
             )
-        await channel.send(
+        m = await channel.send(
             f"<@&{POLLS_ROLE_ID}> new poll!",
             embed=embed,
             view=view,
@@ -160,3 +161,26 @@ class Polls(Cog):
         )
         view.stop()
         await inter.send("Successfully sent the new poll!")
+        await self.bot.db.execute("INSERT INTO polls_messages (message_id) VALUES ($1)", m.id)
+
+    @commands.message_command(name="End Poll")
+    @commands.default_member_permissions(manage_messages=True)
+    async def end_poll(self, inter: disnake.MessageInteraction, msg: disnake.Message):
+        if msg.author != inter.guild.me or not await self.bot.db.fetchval(
+            "SELECT EXISTS(SELECT * FROM polls_messages WHERE message_id = $1)", msg.id
+        ):
+            await inter.send("This message is not a poll!")
+            return
+        await inter.response.defer(ephemeral=True)
+        try:
+            self._requested_updates.get(msg.channel.id, set()).remove(msg.id)
+        except KeyError:
+            pass
+        self._messages.pop(msg.id, None)
+        view = disnake.ui.View.from_message(msg)
+        for item in view.children:
+            item.disabled = True
+        await msg.edit(view=view)
+        await self.bot.db.execute("DELETE FROM polls WHERE message_id = $1", msg.id)
+        await self.bot.db.execute("DELETE FROM polls_messages WHERE message_id = $1", msg.id)
+        await inter.send("Ended this poll!", ephemeral=True)
